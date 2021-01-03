@@ -40,11 +40,13 @@
   }
 </script>
 
-<style lang="scss" scoped >
-  body
+<style lang="scss"  >
+
+  html,body,div
   {
     margin: 0;
     padding: 0;
+    overflow: hidden;
   }
    #login{
      height: 100vh;
