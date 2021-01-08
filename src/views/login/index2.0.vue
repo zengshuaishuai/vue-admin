@@ -42,27 +42,26 @@
 </template>
 
 <script>
-  import {reactive,ref,onMounted} from '@vue/composition-api'
   import {stripscript,validateEmail,validatePass,validateCode1} from '@/utils/validate.js'
   export default {
     name: 'login',
-    setup(props, context){
-
+    data(){
       //验证用户名为邮箱
-      let validateUsername = (rule, value, callback) => {
+      var validateUsername = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入用户名'));
         } else if(!validateEmail(value)) {
           callback(new Error('用户名格式有误'));
         } else{
-          callback() //true
+           callback() //true
         }
       };
+
       //验证密码
-      let validatePassword = (rule, value, callback) => {
+      var validatePassword = (rule, value, callback) => {
         //过滤后的数据
-        ruleForm.password=stripscript(value)
-        value=ruleForm.password
+        this.ruleForm.password=stripscript(value)
+        value=this.ruleForm.password
         if (value === '') {
           callback(new Error('请输入密码'));
         } else if (!validatePass(value)) {
@@ -71,27 +70,30 @@
           callback();
         }
       };
+
       //验证确认密码
-      let validatePasswords = (rule, value, callback) => {
-        if (model.value =='login'){
+      var validatePasswords = (rule, value, callback) => {
+        if (this.model =='login'){
           callback()
         }
         //过滤后的数据
-        ruleForm.passwords=stripscript(value)
-        value=ruleForm.passwords
+        this.ruleForm.passwords=stripscript(value)
+        value=this.ruleForm.passwords
         if (value === '') {
           callback(new Error('请输入密码'));
-        } else if (value!=ruleForm.password) {
+        } else if (value!=this.ruleForm.password) {
           callback(new Error('两次输入密码不一样'));
         } else {
           callback();
         }
       };
+
       //验证验证码
-      let validateCode = (rule, value, callback) => {
+      var validateCode = (rule, value, callback) => {
         //过滤后的数据
-        ruleForm.code=stripscript(value)
-        value=ruleForm.code
+        this.ruleForm.code=stripscript(value)
+        value=this.ruleForm.code
+
         if (value === '') {
           callback(new Error('请输入验证码'));
         } else if (!validateCode1(value)) {
@@ -101,52 +103,56 @@
         }
       };
 
-
-      //这里面放置data里面的数据，生命周期，自定义函数
-      /**声明数据**/
-      const menuTab=reactive([
-        {txt:'登录',current:true,type:'login'},
-        {txt:'注册',current:false,type:'register'}
-      ])
-      const model=ref('login')
-
-      /**表单的绑定数据**/
-      const ruleForm=reactive({
-            username: '',
-            password: '',
-            repassword:'',
-            code: ''
-          })
-
-      /**表单的验证**/
-      const rules=reactive({
-        username: [
-          { validator: validateUsername, trigger: 'blur' }
+      return {
+        menuTab:[
+          {txt:'登录',current:true,type:'login'},
+          {txt:'注册',current:false,type:'register'}
         ],
-        password: [
-          { validator: validatePassword, trigger: 'blur' }
-        ],
-        repassword: [
-          { validator: validatePasswords, trigger: 'blur' }
-        ],
-        code: [
-          { validator: validateCode, trigger: 'blur' }
-        ]
-      })
+        //模块的值
+        model:'login',
 
-      /**自定义函数**/
-      const toggleMenu=(data=>{
-        console.log(data)
-        menuTab.forEach(elem=>{
-          elem.current=false
-        })
-        //高光
-        data.current=true
+        //表单的数据
+        ruleForm: {
+          username: '',
+          password: '',
+          repassword:'',
+          code: ''
+        },
+        rules: {
+          username: [
+            { validator: validateUsername, trigger: 'blur' }
+          ],
+          password: [
+            { validator: validatePassword, trigger: 'blur' }
+          ],
+          repassword: [
+            { validator: validatePasswords, trigger: 'blur' }
+          ],
+          code: [
+            { validator: validateCode, trigger: 'blur' }
+          ]
+        }
+      };
+      },
+    created() {
+    },
+    mounted() {
+      //挂载完成后自动执行
+    },
+    methods:{
+      //写函数的地方
+      toggleMenu(data){
+
+         this.menuTab.forEach(elem=>{
+           elem.current=false
+         })
+         //高光
+         data.current=true
         //修改值
-        model.value=data.type
-      })
-      const submitForm=(formName=> {
-        context.refs[formName].validate((valid) => {
+        this.model=data.type
+       },
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
           if (valid) {
             alert('submit!');
           } else {
@@ -154,24 +160,11 @@
             return false;
           }
         });
-      })
+      },
 
-      /** 挂载完后执行 **/
-      onMounted(()=> {
-
-      })
-
-      return {
-        menuTab,
-        model,
-        ruleForm,
-        rules,
-        toggleMenu,
-        submitForm
-      }
-
-    }
-
+  },
+    props:{},
+    watch:{}
   }
 </script>
 
