@@ -5,8 +5,12 @@ import store from './store' //状态仓库
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueCompositionApi from '@vue/composition-api';
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
 
+
+Vue.use(VueAxios, axios)
 Vue.use(VueCompositionApi);
 Vue.use(ElementUI);
 

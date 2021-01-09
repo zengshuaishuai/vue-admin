@@ -42,11 +42,12 @@
 </template>
 
 <script>
+  import service from '@/utils/request'
   import {reactive,ref,onMounted} from '@vue/composition-api'
   import {stripscript,validateEmail,validatePass,validateCode1} from '@/utils/validate.js'
   export default {
     name: 'login',
-    setup(props, context){
+    setup(props,{refs}){
 
       //验证用户名为邮箱
       let validateUsername = (rule, value, callback) => {
@@ -136,7 +137,6 @@
 
       /**自定义函数**/
       const toggleMenu=(data=>{
-        console.log(data)
         menuTab.forEach(elem=>{
           elem.current=false
         })
@@ -146,7 +146,7 @@
         model.value=data.type
       })
       const submitForm=(formName=> {
-        context.refs[formName].validate((valid) => {
+        refs[formName].validate((valid) => {
           if (valid) {
             alert('submit!');
           } else {
