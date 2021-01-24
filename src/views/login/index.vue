@@ -7,8 +7,8 @@
       <!---表单的开始-->
       <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="login-form" size="medium">
         <el-form-item  prop="username" class="item-form">
-          <label>邮箱</label>
-          <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+          <label for="username">邮箱</label>
+          <el-input  id="username" type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
         </el-form-item>
 
         <el-form-item  prop="password" class="item-form">
@@ -25,7 +25,7 @@
           <label>验证码</label>
           <el-row :gutter="10">
             <el-col :span="14"><el-input v-model.number="ruleForm.code"></el-input></el-col>
-            <el-col :span="10"><el-button type="success" class="block">获取验证码</el-button></el-col>
+            <el-col :span="10"><el-button type="success" class="block"  @click="getSms">获取验证码</el-button></el-col>
 
           </el-row>
 
@@ -42,12 +42,12 @@
 </template>
 
 <script>
-  import service from '@/utils/request'
+  import {GetSms} from  '@/api/login'
   import {reactive,ref,onMounted} from '@vue/composition-api'
   import {stripscript,validateEmail,validatePass,validateCode1} from '@/utils/validate.js'
   export default {
     name: 'login',
-    setup(props,{refs}){
+    setup(props,{refs,root}){
 
       //验证用户名为邮箱
       let validateUsername = (rule, value, callback) => {
@@ -145,6 +145,36 @@
         //修改值
         model.value=data.type
       })
+
+      /**
+       * 获取验证码
+       */
+      const getSms=(() =>{
+        //进行提示
+        if (ruleForm.username ==""){
+          root.$message.error('邮箱不能为空!!');
+          return false
+        }
+        if (!validateEmail(ruleForm.username)){
+          root.$message.error('邮箱格式有误!!');
+          return false
+        }
+
+        //获取验证码
+        let requestData={
+          username:ruleForm.username,
+          module:'login'
+        }
+        GetSms(requestData).then(response =>{
+            console.log(response)
+        }).catch(error =>{
+          console.log(error)
+        })
+      })
+
+      /**
+       *提交表单
+       */
       const submitForm=(formName=> {
         refs[formName].validate((valid) => {
           if (valid) {
@@ -158,7 +188,7 @@
 
       /** 挂载完后执行 **/
       onMounted(()=> {
-
+             // getSms()
       })
 
       return {
@@ -167,7 +197,8 @@
         ruleForm,
         rules,
         toggleMenu,
-        submitForm
+        submitForm,
+        getSms
       }
 
     }
